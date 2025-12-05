@@ -261,9 +261,8 @@ def RP_tables(duration):
     ax[2].plot(RP_df_2024)
     ax[2].set_title(f'2024 Reference Prices by Hub Zone for {duration}-hr batteries')
     ax[2].set_ylabel('$/MWh')
-
     plt.tight_layout()
-    fig.subplots_adjust(hspace=0.4)
+    
     handles, labels = ax[0].get_legend_handles_labels()
     fig.legend(handles, labels, 
                 title='Hub Zones',
