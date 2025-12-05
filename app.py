@@ -349,7 +349,7 @@ def RP_tables(duration):
     ax.set_title(f'Test Year (Average of 2022-2024) Prices by Hub Zone Across Months {duration}-hr Batteries')
     plt.tight_layout()
 
-    handles, labels = ax[0].get_legend_handles_labels()
+    handles, labels = ax.get_legend_handles_labels()
     fig.legend(handles, labels, 
                 title='Hub Zones',
                 loc='upper right',
