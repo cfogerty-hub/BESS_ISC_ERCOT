@@ -472,10 +472,10 @@ def RP_tables(duration):
     hub_polygons_df = hub_polygons_df.drop(columns=['OBJECTID','NAME','STATE_NAME','STATE_FIPS','CNTY_FIPS','FIPS','SQMI','Shape_Leng','Shape_Area'])
     hub_polygons_df = gpd.GeoDataFrame(hub_polygons_df)
 
-    return ref_prices, bar_ref_prices, test_year, hub_polygons_df
+    return ref_prices, bar_ref_prices, test_year ## hub_polygons_df
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year, hub_polygons_df = RP_tables(duration)
+    ref_prices, bar_ref_prices, test_year = RP_tables(duration)
 
     st.pyplot(ref_prices)
 
@@ -483,7 +483,7 @@ if st.button('Run'):
 
     st.pyplot(test_year)
 
-    st.pyplot(hub_polygons_df)
+    ## st.pyplot(hub_polygons_df)
 
     # Convert index to column if it's named (so all properties are accessible)
 
