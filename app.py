@@ -353,8 +353,8 @@ def RP_tables(duration):
     RP_df_test_year = RP_df_test_year.T
 
     df = RP_df_test_year
-    df = df.rename(columns={'Unnamed: 0': 'Hub Zone'})
-    df.set_index('Hub Zone', inplace=True)
+    ## df = df.rename(columns={'Unnamed: 0': 'Hub Zone'})
+    ## df.set_index('Hub Zone', inplace=True)
 
     hou_hub_counties = ['Montgomery','Waller','Harris','Fort Bend','Brazoria','Galveston','Chambers']
 
