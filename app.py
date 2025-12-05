@@ -475,11 +475,15 @@ def RP_tables(duration):
     return ref_prices, bar_ref_prices, test_year, hub_polygons_df
 
 if st.button('Run'):
-    test_year, hub_polygons_df = RP_tables(duration)
+    ref_prices, bar_ref_prices, test_year, hub_polygons_df = RP_tables(duration)
 
     st.pyplot(ref_prices)
 
+    st.pyplot(bar_ref_prices)
+
     st.pyplot(test_year)
+
+    st.pyplot(hub_polygons_df)
 
     # Convert index to column if it's named (so all properties are accessible)
 
