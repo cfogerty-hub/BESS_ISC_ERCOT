@@ -267,7 +267,7 @@ def RP_tables(duration):
 
     plt.tight_layout
     fig.subplots_adjust(hspace=0.4)
-    plt.show()
+    st.pyplot(fig)
 
         ## bar plots. Claude assisted with formatting.
 
@@ -293,8 +293,6 @@ def RP_tables(duration):
                 loc='upper right',
                 bbox_to_anchor=(0.98, 0.98),
                 framealpha=0.7)  # 0.7 = 70% opacity (0=transparent, 1=opaque)
-
-    plt.show()
 
         ## August 2023 is dominant. Perhaps we should remove this outlier?
 
@@ -334,8 +332,6 @@ def RP_tables(duration):
                 bbox_to_anchor=(0.98, 0.98),
                 framealpha=0.7)  # 0.7 = 70% opacity (0=transparent, 1=opaque)
 
-    plt.show()
-
         ## Test year for reference prices
 
     RP_df_test_year = pd.DataFrame({'Houston Reference Price':np.mean([RP_df_2022['Houston Reference Price'],RP_df_2023_aug_adjusted['Houston Reference Price'],RP_df_2024['Houston Reference Price']],axis=0),
@@ -350,7 +346,7 @@ def RP_tables(duration):
     ax.set_ylabel('Reference Price ($/MWh)')        
     ax.set_title(f'Test Year (Average of 2022-2024) Prices by Hub Zone Across Months {duration}-hr Batteries')
     plt.tight_layout()
-    test_year = plt.show()
+    test_year = fig
 
     ## reshape for mapping
 
@@ -476,32 +472,29 @@ def RP_tables(duration):
 
     return test_year, hub_polygons_df
 
-hub_polygons_df.to_file("hub_polygons.geojson",driver="GeoJSON")
+test_year, hub_polygons_df = RP_tables(duration)
 
-GDF_PATH = 'hub_polygons.geojson'
-gdf = gpd.read_file(GDF_PATH)
+center = [hub_polygons_df.geometry.centroid.y.mean(), hub_polygons_df.geometry.centroid.x.mean()]
+m = folium.Map(location=center, zoom_start=7, tiles="OpenStreetMap")
+geojson = folium.GeoJson(
+    hub_polygons_df,
+    name="ERCOT Hubs",
+    style_function=lambda feature: {
+        "color": "#3186cc",
+        "weight": 1.5,
+        "fillOpacity": 0.35,
+    },
+    tooltip=folium.features.GeoJsonTooltip(
+        fields=[c for c in hub_polygons_df.columns if "Reference Price" in c],
+        aliases=[c.replace(" Reference Price", "") for c in hub_polygons_df.columns if "Reference Price" in c],
+        sticky=True,
+    ),
+)
+geojson.add_to(m)
+st_data = st_folium(m, width=800, height=700)
 
-bounds = gdf.total_bounds
-center = [(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2]
-
-m = folium.Map(location=center, zoom_start=8, tiles="OpenStreetMap")
-
-# Add shapefile layer
-fields = [c for c in gdf.columns if c != gdf.geometry.name][:10]
-folium.GeoJson(
-    gdf,
-    name="Layer",
-    style_function=lambda _f: {"color": "#3186cc", "weight": 1.5, "fillOpacity": 0.35},
-    tooltip=folium.features.GeoJsonTooltip(fields=fields, aliases=fields, sticky=True),
-).add_to(m)
-
-m.add_child(folium.LatLngPopup())
-
-# Fit map to layer bounds
-m.fit_bounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]])
-
-# Render map
-st_data = st_folium(m, width=None, height=720)
+# 2. Show the bar plot
+st.pyplot(test_year)
 
 
 
