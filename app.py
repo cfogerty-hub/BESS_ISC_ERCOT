@@ -348,6 +348,14 @@ def RP_tables(duration):
     ax.set_ylabel('Reference Price ($/MWh)')        
     ax.set_title(f'Test Year (Average of 2022-2024) Prices by Hub Zone Across Months {duration}-hr Batteries')
     plt.tight_layout()
+
+    handles, labels = ax[0].get_legend_handles_labels()
+    fig.legend(handles, labels, 
+                title='Hub Zones',
+                loc='upper right',
+                bbox_to_anchor=(0.98, 0.98),
+                framealpha=0.7)  # 0.7 = 70% opacity (0=transparent, 1=opaque)
+
     test_year = fig
 
     ## reshape for mapping
