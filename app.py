@@ -267,7 +267,7 @@ def RP_tables(duration):
 
     plt.tight_layout
     fig.subplots_adjust(hspace=0.4)
-    st.pyplot(fig)
+    ref_prices = fig
 
         ## bar plots. Claude assisted with formatting.
 
@@ -293,6 +293,8 @@ def RP_tables(duration):
                 loc='upper right',
                 bbox_to_anchor=(0.98, 0.98),
                 framealpha=0.7)  # 0.7 = 70% opacity (0=transparent, 1=opaque)
+
+    bar_ref_prices = fig
 
         ## August 2023 is dominant. Perhaps we should remove this outlier?
 
@@ -420,10 +422,10 @@ def RP_tables(duration):
     ## us_county.boundary.plot(color="black")
 
     # get the limits of the gdf
-    us_county.total_bounds
+    ## us_county.total_bounds
 
     # get the coordinate reference system (CRS)
-    us_county.crs
+    ## us_county.crs
 
     # can aggregate geometry on a column: https://geopandas.org/en/stable/docs/user_guide/aggregation_with_dissolve.html
     us_states = us_county.dissolve(
@@ -439,9 +441,9 @@ def RP_tables(duration):
 
     tx_county = us_county[us_county["STATE_NAME"] == "Texas"]
 
-    tx_county.plot()
+    ## tx_county.plot()
 
-    tx_county.boundary.plot()
+    ## tx_county.boundary.plot()
 
     tx = tx_county.dissolve(by="STATE_NAME", aggfunc="sum")
 
@@ -470,50 +472,52 @@ def RP_tables(duration):
     hub_polygons_df = hub_polygons_df.drop(columns=['OBJECTID','NAME','STATE_NAME','STATE_FIPS','CNTY_FIPS','FIPS','SQMI','Shape_Leng','Shape_Area'])
     hub_polygons_df = gpd.GeoDataFrame(hub_polygons_df)
 
-    return test_year, hub_polygons_df
+    return ref_prices, bar_ref_prices, test_year, hub_polygons_df
 
 if st.button('Run'):
     test_year, hub_polygons_df = RP_tables(duration)
+
+    st.pyplot(ref_prices)
 
     st.pyplot(test_year)
 
     # Convert index to column if it's named (so all properties are accessible)
 
-    gdf = hub_polygons_df.copy() 
-    gdf['Hub Zone'] = gdf.index
+    ## gdf = hub_polygons_df.copy() 
+    ## gdf['Hub Zone'] = gdf.index
 
-    hub_zone_col = 'Hub Zone'
+    ## hub_zone_col = 'Hub Zone'
 
     # Compute map center
-    center = [gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()]
+    ## center = [gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()]
 
     # Convert to GeoJSON (all properties will be included)
-    geojson_data = json.loads(gdf.to_json())
+    ## geojson_data = json.loads(gdf.to_json())
 
     # Extract columns for tooltip (those with 'Reference Price' in the name)
-    months = [c for c in gdf.columns if c not in ['geometry', hub_zone_col]]
+    ## months = [c for c in gdf.columns if c not in ['geometry', hub_zone_col]]
 
-    tooltip_cols = [hub_zone_col] + months
-    tooltip_aliases = ["Hub Zone"] + months
+    ## tooltip_cols = [hub_zone_col] + months
+    ## tooltip_aliases = ["Hub Zone"] + months
 
     # Create folium map
-    m = folium.Map(location=center, zoom_start=7, tiles="OpenStreetMap")
+    ## m = folium.Map(location=center, zoom_start=7, tiles="OpenStreetMap")
 
-    geojson = folium.GeoJson(
-        geojson_data,
-        name="ERCOT Hubs",
-        style_function=lambda feature: {
-            "color": "#3186cc",
-            "weight": 1.5,
-            "fillOpacity": 0.35,
-        },
-        tooltip=folium.features.GeoJsonTooltip(
-            fields=tooltip_cols,
-            aliases=tooltip_aliases,
-            sticky=True,
-        ),
-    )
-    geojson.add_to(m)
+    ## geojson = folium.GeoJson(
+        ## geojson_data,
+        ## name="ERCOT Hubs",
+        ## style_function=lambda feature: {
+            ## "color": "#3186cc",
+            ## "weight": 1.5,
+            ## "fillOpacity": 0.35,
+        ## },
+        ## tooltip=folium.features.GeoJsonTooltip(
+            ## fields=tooltip_cols,
+            ## aliases=tooltip_aliases,
+            ## sticky=True,
+        ## ),
+    ## )
+    ## geojson.add_to(m)
 
     # Render in Streamlit
-    st_folium(m, width=800, height=700)
+    ## st_folium(m, width=800, height=700)
