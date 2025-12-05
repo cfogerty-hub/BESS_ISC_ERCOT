@@ -472,30 +472,47 @@ def RP_tables(duration):
 
     return test_year, hub_polygons_df
 
-test_year, hub_polygons_df = RP_tables(duration)
+if st.button('Run'):
+    test_year, hub_polygons_df = RP_tables(duration)
 
-center = [hub_polygons_df.geometry.centroid.y.mean(), hub_polygons_df.geometry.centroid.x.mean()]
-m = folium.Map(location=center, zoom_start=7, tiles="OpenStreetMap")
-geojson = folium.GeoJson(
-    hub_polygons_df,
-    name="ERCOT Hubs",
-    style_function=lambda feature: {
-        "color": "#3186cc",
-        "weight": 1.5,
-        "fillOpacity": 0.35,
-    },
-    tooltip=folium.features.GeoJsonTooltip(
-        fields=[c for c in hub_polygons_df.columns if "Reference Price" in c],
-        aliases=[c.replace(" Reference Price", "") for c in hub_polygons_df.columns if "Reference Price" in c],
-        sticky=True,
-    ),
-)
-geojson.add_to(m)
-st_data = st_folium(m, width=800, height=700)
+    st.pyplot(test_year)
 
-# 2. Show the bar plot
-st.pyplot(test_year)
+    # Convert index to column if it's named (so all properties are accessible)
+    if hub_polygons_df.index.name:
+        gdf = hub_polygons_df.reset_index()
+    else:
+        gdf = hub_polygons_df
 
+    hub_zone_col = gdf.columns[0]
 
+    # Compute map center
+    center = [gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()]
 
-    
+    # Convert to GeoJSON (all properties will be included)
+    geojson_data = json.loads(gdf.to_json())
+
+    # Extract columns for tooltip (those with 'Reference Price' in the name)
+    tooltip_cols = [hub_zone_col] + [c for c in gdf.columns if "Reference Price" in c]
+    tooltip_aliases = ["Hub Zone"] + [c.replace(" Reference Price", "") for c in tooltip_cols]
+
+    # Create folium map
+    m = folium.Map(location=center, zoom_start=7, tiles="OpenStreetMap")
+
+    geojson = folium.GeoJson(
+        geojson_data,
+        name="ERCOT Hubs",
+        style_function=lambda feature: {
+            "color": "#3186cc",
+            "weight": 1.5,
+            "fillOpacity": 0.35,
+        },
+        tooltip=folium.features.GeoJsonTooltip(
+            fields=tooltip_cols,
+            aliases=tooltip_aliases,
+            sticky=True,
+        ),
+    )
+    geojson.add_to(m)
+
+    # Render in Streamlit
+    st_folium(m, width=800, height=700)
