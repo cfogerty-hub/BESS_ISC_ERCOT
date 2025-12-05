@@ -478,12 +478,11 @@ if st.button('Run'):
     st.pyplot(test_year)
 
     # Convert index to column if it's named (so all properties are accessible)
-    if hub_polygons_df.index.name:
-        gdf = hub_polygons_df.reset_index()
-    else:
-        gdf = hub_polygons_df
 
-    hub_zone_col = gdf.columns[0]
+    gdf = hub_polygons_df.copy() 
+    gdf['Hub Zone'] = gdf.index
+
+    hub_zone_col = 'Hub Zone'
 
     # Compute map center
     center = [gdf.geometry.centroid.y.mean(), gdf.geometry.centroid.x.mean()]
@@ -492,8 +491,10 @@ if st.button('Run'):
     geojson_data = json.loads(gdf.to_json())
 
     # Extract columns for tooltip (those with 'Reference Price' in the name)
-    tooltip_cols = [hub_zone_col] + [c for c in gdf.columns if "Reference Price" in c]
-    tooltip_aliases = ["Hub Zone"] + [c.replace(" Reference Price", "") for c in tooltip_cols]
+    months = [c for c in gdf.columns if c not in ['geometry', hub_zone_col]]
+
+    tooltip_cols = [hub_zone_col] + months
+    tooltip_aliases = ["Hub Zone"] + months
 
     # Create folium map
     m = folium.Map(location=center, zoom_start=7, tiles="OpenStreetMap")
