@@ -12,7 +12,7 @@ from io import StringIO
 from streamlit_folium import st_folium
 
 st.set_page_config(page_title="Reference Price for Batteries in ERCOT",layout='wide')
-st.title("BESS ISC in ERCOT")
+st.title("Reference Price for Batteries in ERCOT")
 
 duration = st.sidebar.selectbox('Select a battery duration:',(2,4,8,10,12))
 
