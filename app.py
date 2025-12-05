@@ -265,7 +265,7 @@ def RP_tables(duration):
     ax[2].set_ylabel('$/MWh')
     ax[2].legend(RP_df_2024.columns,loc='upper right')
 
-    plt.tight_layout
+    plt.tight_layout()
     fig.subplots_adjust(hspace=0.4)
     ref_prices = fig
 
