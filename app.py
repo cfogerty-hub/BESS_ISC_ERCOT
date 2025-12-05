@@ -255,6 +255,7 @@ def RP_tables(duration):
     ax[0].plot(RP_df_2022)
     ax[0].set_title(f'2022 Reference Prices by Hub Zone for {duration}-hr batteries')
     ax[0].set_ylabel('$/MWh')
+    ax[0].legend(RP_df_2022.columns,loc='upper right')
     ax[1].plot(RP_df_2023)
     ax[1].set_title(f'2023 Reference Prices by Hub Zone for {duration}-hr batteries')
     ax[1].set_ylabel('$/MWh')
@@ -262,13 +263,8 @@ def RP_tables(duration):
     ax[2].set_title(f'2024 Reference Prices by Hub Zone for {duration}-hr batteries')
     ax[2].set_ylabel('$/MWh')
     plt.tight_layout()
-    
-    handles, labels = ax[0].get_legend_handles_labels()
-    fig.legend(handles, labels, 
-                title='Hub Zones',
-                loc='upper right',
-                bbox_to_anchor=(0.98, 0.98),
-                framealpha=0.7) 
+    fig.subplots_adjust(hspace=0.4)
+
     ref_prices = fig
 
         ## bar plots. Claude assisted with formatting.
