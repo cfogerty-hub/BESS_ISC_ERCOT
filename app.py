@@ -255,18 +255,21 @@ def RP_tables(duration):
     ax[0].plot(RP_df_2022)
     ax[0].set_title(f'2022 Reference Prices by Hub Zone for {duration}-hr batteries')
     ax[0].set_ylabel('$/MWh')
-    ax[0].legend(RP_df_2022.columns,loc='upper right')
     ax[1].plot(RP_df_2023)
     ax[1].set_title(f'2023 Reference Prices by Hub Zone for {duration}-hr batteries')
     ax[1].set_ylabel('$/MWh')
-    ax[1].legend(RP_df_2023.columns,loc='upper right')
     ax[2].plot(RP_df_2024)
     ax[2].set_title(f'2024 Reference Prices by Hub Zone for {duration}-hr batteries')
     ax[2].set_ylabel('$/MWh')
-    ax[2].legend(RP_df_2024.columns,loc='upper right')
 
     plt.tight_layout()
     fig.subplots_adjust(hspace=0.4)
+    handles, labels = ax[0].get_legend_handles_labels()
+    fig.legend(handles, labels, 
+                title='Hub Zones',
+                loc='upper right',
+                bbox_to_anchor=(0.98, 0.98),
+                framealpha=0.7) 
     ref_prices = fig
 
         ## bar plots. Claude assisted with formatting.
@@ -293,8 +296,6 @@ def RP_tables(duration):
                 loc='upper right',
                 bbox_to_anchor=(0.98, 0.98),
                 framealpha=0.7)  # 0.7 = 70% opacity (0=transparent, 1=opaque)
-
-    bar_ref_prices = fig
 
         ## August 2023 is dominant. Perhaps we should remove this outlier?
 
@@ -333,6 +334,8 @@ def RP_tables(duration):
                 loc='upper right',
                 bbox_to_anchor=(0.98, 0.98),
                 framealpha=0.7)  # 0.7 = 70% opacity (0=transparent, 1=opaque)
+
+    bar_ref_prices = fig
 
         ## Test year for reference prices
 
