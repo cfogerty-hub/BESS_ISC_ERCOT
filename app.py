@@ -14,9 +14,10 @@ from streamlit_folium import st_folium
 st.set_page_config(page_title="Reference Price for Batteries in ERCOT",layout='wide')
 st.title("Reference Price for Batteries in ERCOT")
 
-duration = st.sidebar.selectbox('Select a battery duration:',(2,4,8,10,12))
+duration = st.slider('Select a battery duration:',0,12,4,1)
+capacity = st.slider('Select a capacity: ',0,1000,0)
 
-def RP_tables(duration):
+def RP_tables(duration, capacity):
 
     DATA_DIR = Path('ercot_data')
 
@@ -341,6 +342,58 @@ def RP_tables(duration):
                                             'West Reference Price':np.mean([RP_df_2022['West Reference Price'],RP_df_2023_aug_adjusted['West Reference Price'],RP_df_2024['West Reference Price']],axis=0)})
     RP_df_test_year.index = months
 
+    days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    month_number = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    energy = capacity * duration
+    Hou_rev_list = []
+    North_rev_list = []
+    Pan_rev_list = []
+    South_rev_list = []
+    West_rev_list = []
+
+    if duration < 8:
+        for i in month_number:
+            i = i - 1
+            Hou_revenue = (RP_df_test_year['Houston Reference Price'][i]) * energy * days_per_month[i]
+            Hou_rev_list.append(Hou_revenue)
+            North_revenue = (RP_df_test_year['North Reference Price'][i]) * energy * days_per_month[i]
+            North_rev_list.append(North_revenue)
+            Pan_revenue = (RP_df_test_year['Panhandle Reference Price'][i]) * energy * days_per_month[i]
+            Pan_rev_list.append(Pan_revenue)
+            South_revenue = (RP_df_test_year['South Reference Price'][i]) * energy * days_per_month[i]
+            South_rev_list.append(South_revenue)
+            West_revenue = (RP_df_test_year['West Reference Price'][i]) * energy * days_per_month[i]
+            West_rev_list.append(West_revenue)
+    else:
+        for i in month_number:
+            weeks_per_month = 4.5
+            i = i - 1
+            Hou_revenue = (RP_df_test_year['Houston Reference Price'][i]) * energy * weeks_per_month
+            Hou_rev_list.append(Hou_revenue)
+            North_revenue = (RP_df_test_year['North Reference Price'][i]) * energy * weeks_per_month
+            North_rev_list.append(North_revenue)
+            Pan_revenue = (RP_df_test_year['Panhandle Reference Price'][i]) * energy * weeks_per_month
+            Pan_rev_list.append(Pan_revenue)
+            South_revenue = (RP_df_test_year['South Reference Price'][i]) * energy * weeks_per_month
+            South_rev_list.append(South_revenue)
+            West_revenue = (RP_df_test_year['West Reference Price'][i]) * energy * weeks_per_month
+            West_rev_list.append(West_revenue)
+
+    revenues_df = pd.DataFrame({'Houston Monthly Reference Revenue':Hou_rev_list,'North Monthly Reference Revenue':North_rev_list,
+                                'Panhandle Monthly Reference Revenue':Pan_rev_list,'South Monthly Reference Revenue':South_rev_list,
+                                'West Monthly Reference Revenue':West_rev_list})
+    
+    revenues_df.index = months
+
+    total_test_year_revenues = {'Houston Hub Zone':revenues_df['Houston Monthly Reference Revenue'].sum(),
+                                'North Hub Zone':revenues_df['North Monthly Reference Revenue'].sum(),
+                                'Panhandle Hub Zone':revenues_df['Panhandle Monthly Reference Revenue'].sum(),
+                                'South Hub Zone':revenues_df['South Monthly Reference Revenue'].sum(),
+                                'West Hub Zone':revenues_df['West Monthly Reference Revenue'].sum()}
+    
+    total_revenues_df = pd.DataFrame([total_test_year_revenues])
+    total_revenues_df.index = ['Annual Reference Revenues']
+
     fig, ax = plt.subplots(figsize=(12, 6))
     RP_df_test_year.plot(kind='bar', figsize=(12, 6),ax=ax,legend=False)
     ax.set_ylabel('Reference Price ($/MWh)')        
@@ -478,7 +531,9 @@ def RP_tables(duration):
     hub_polygons_df = hub_polygons_df.drop(columns=['OBJECTID','NAME','STATE_NAME','STATE_FIPS','CNTY_FIPS','FIPS','SQMI','Shape_Leng','Shape_Area'])
     hub_polygons_df = gpd.GeoDataFrame(hub_polygons_df)
 
-    return ref_prices, bar_ref_prices, test_year ## hub_polygons_df
+    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df ## hub_polygons_df
+
+
 
 if st.button('Run'):
     ref_prices, bar_ref_prices, test_year = RP_tables(duration)
@@ -488,6 +543,10 @@ if st.button('Run'):
     st.pyplot(bar_ref_prices)
 
     st.pyplot(test_year)
+
+    st.data(revenues_df)
+
+    st.data(total_revenues_df)
 
     ## st.pyplot(hub_polygons_df)
 
