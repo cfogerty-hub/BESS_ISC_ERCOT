@@ -406,8 +406,6 @@ def RP_tables(duration, capacity, strike_price):
     ax.axhline(y=strike_price, color='red', linestyle='--', linewidth=1.5, label='Strike Price')
 
     handles, labels = ax.get_legend_handles_labels()
-    handles.append(ax.lines[-1])
-    labels.append("Strike Price")
     fig.legend(handles, labels, 
                 title='Hub Zones',
                 loc='upper right',
