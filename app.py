@@ -536,7 +536,7 @@ def RP_tables(duration, capacity):
 
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year = RP_tables(duration)
+    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df = RP_tables(duration)
 
     st.pyplot(ref_prices)
 
