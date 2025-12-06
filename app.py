@@ -379,20 +379,20 @@ def RP_tables(duration, capacity):
             West_revenue = (RP_df_test_year['West Reference Price'][i]) * energy * weeks_per_month
             West_rev_list.append(West_revenue)
 
-    revenues_df = pd.DataFrame({'Houston Monthly Reference Revenue ($)':Hou_rev_list,'North Monthly Reference Revenue':North_rev_list,
-                                'Panhandle Monthly Reference Revenue ($)':Pan_rev_list,'South Monthly Reference Revenue':South_rev_list,
+    revenues_df = pd.DataFrame({'Houston Monthly Reference Revenue ($)':Hou_rev_list,'North Monthly Reference Revenue ($)':North_rev_list,
+                                'Panhandle Monthly Reference Revenue ($)':Pan_rev_list,'South Monthly Reference Revenue ($)':South_rev_list,
                                 'West Monthly Reference Revenue ($)':West_rev_list})
     
     revenues_df.index = months
 
-    total_test_year_revenues = {'Houston Hub Zone ($)':revenues_df['Houston Monthly Reference Revenue'].sum(),
-                                'North Hub Zone ($)':revenues_df['North Monthly Reference Revenue'].sum(),
-                                'Panhandle Hub Zone ($)':revenues_df['Panhandle Monthly Reference Revenue'].sum(),
-                                'South Hub Zone ($)':revenues_df['South Monthly Reference Revenue'].sum(),
-                                'West Hub Zone ($)':revenues_df['West Monthly Reference Revenue'].sum()}
+    total_test_year_revenues = {'Houston Hub Zone ($)':revenues_df['Houston Monthly Reference Revenue ($)'].sum(),
+                                'North Hub Zone ($)':revenues_df['North Monthly Reference Revenue ($)'].sum(),
+                                'Panhandle Hub Zone ($)':revenues_df['Panhandle Monthly Reference Revenue ($)'].sum(),
+                                'South Hub Zone ($)':revenues_df['South Monthly Reference Revenue ($)'].sum(),
+                                'West Hub Zone ($)':revenues_df['West Monthly Reference Revenue ($)'].sum()}
     
     total_revenues_df = pd.DataFrame([total_test_year_revenues])
-    total_revenues_df.index = ['Annual Reference Revenues']
+    total_revenues_df.index = ['Annual Reference Revenues ($)']
 
     fig, ax = plt.subplots(figsize=(12, 6))
     RP_df_test_year.plot(kind='bar', figsize=(12, 6),ax=ax,legend=False)
