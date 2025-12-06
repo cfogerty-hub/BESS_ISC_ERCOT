@@ -13,7 +13,7 @@ from streamlit_folium import st_folium
 
 st.set_page_config(page_title="Reference Price for Batteries in ERCOT",layout='wide')
 st.title("Reference Price for Batteries in ERCOT")
-
+st.write("This tool calculates uses historical settlement prices from ERCOT Hub Zones to calculate the revenues that a battery of a specified capacity and duration would be expected to make from arbitrage and ancillary services. These Reference Prices would then serve as a hypothetical price used to calculate an Index Storage Credit (ISCs). ISCs, inspire by the NYSERDA Bulk Energy Storage Program, are intended to cover the gap between Reference Prices and Strike Prices bid in by battery owners. See https://www.nyserda.ny.gov/All-Programs/Energy-Storage-Program/Developers-and-Contractors/Bulk-Storage-Incentives for more details on this program.")
 duration = st.slider('Select a battery duration:',0,12,4,1)
 capacity = st.slider('Select a capacity: ',0,1000,100,10)
 
