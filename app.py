@@ -17,8 +17,10 @@ st.write("This tool calculates uses historical settlement prices from ERCOT Hub 
 st.write("Methodology: Using hub zone DAM settlement prices (https://www.ercot.com/mp/data-products/data-product-details?id=NP4-180-ER) for energy and capacity from 2022 to 2024, this tool calculates daily arbitrage revenues expected for batteries less than 8-hours in duration (spread between the highest and lowest 0 - 8 hours in a day based on duration). For batteries with duration between 8 and 12 hours, the tool calculates the weekly arbitrage revenues expected (spread between the highest and lowest 8 - 12 hours during the week based on duration). Ancillary service revenues are assumed to be the average DAM capacity prices (https://www.ercot.com/mp/data-products/data-product-details?id=NP4-181-ER) for an entire month across all revenue streams (NON-SPIN, REG-DOWN, REG-UP, RRS, ECRS). These assumptions are not sophisticated by design to set a baseline expected operational strategy for batteries.")
 duration = st.slider('Select a battery duration (hours):',0,12,4,1)
 capacity = st.slider('Select a capacity (MW): ',0,1000,100,10)
+strike_price = st.slider('Select a strike price ($/MWh): ',0,500)
 
-def RP_tables(duration, capacity):
+
+def RP_tables(duration, capacity, strike_price):
 
     DATA_DIR = Path('ercot_data')
 
@@ -400,8 +402,12 @@ def RP_tables(duration, capacity):
     ax.set_ylabel('Reference Price ($/MWh)')        
     ax.set_title(f'Test Year (Average of 2022-2024) Prices by Hub Zone Across Months {duration}-hr Batteries')
     plt.tight_layout()
+    strike_price = strike_price  # replace with your value
+    ax.axhline(y=strike_price, color='red', linestyle='--', linewidth=1.5, label='Strike Price')
 
     handles, labels = ax.get_legend_handles_labels()
+    handles.append(ax.lines[-1])
+    labels.append("Strike Price")
     fig.legend(handles, labels, 
                 title='Hub Zones',
                 loc='upper right',
@@ -537,7 +543,7 @@ def RP_tables(duration, capacity):
 
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df = RP_tables(duration, capacity)
+    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df = RP_tables(duration, capacity, strike_price)
 
     st.pyplot(ref_prices)
 
