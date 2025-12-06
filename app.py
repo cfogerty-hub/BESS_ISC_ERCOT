@@ -408,8 +408,6 @@ def RP_tables(duration, capacity, strike_price):
         if total_revenues_df.iloc[2][i]<0:
             hub_zone_negative = hz_names[i]
             neg_hzs.append(hub_zone_negative)
-    if len(neg_hzs) > 0:
-        neg_hzs_list = neg_hzs
     
     max_hub_zone = total_revenues_df.iloc[2].idxmax()
 
@@ -553,12 +551,12 @@ def RP_tables(duration, capacity, strike_price):
     hub_polygons_df = hub_polygons_df.drop(columns=['OBJECTID','NAME','STATE_NAME','STATE_FIPS','CNTY_FIPS','FIPS','SQMI','Shape_Leng','Shape_Area'])
     hub_polygons_df = gpd.GeoDataFrame(hub_polygons_df)
 
-    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, neg_hzs_list ## hub_polygons_df
+    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, neg_hzs ## hub_polygons_df
 
 
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, neg_hzs_list = RP_tables(duration, capacity, strike_price)
+    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, neg_hzs = RP_tables(duration, capacity, strike_price)
 
     st.pyplot(ref_prices)
 
@@ -572,7 +570,10 @@ if st.button('Run'):
 
     st.write(f'The hub zone with the maximum reference price is: {max_hub_zone}')
 
-    st.write(f'The following hub zones have sufficient reference prices. No Index Storage Credits are needed: {neg_hzs_list}')
+    if len(neg_hzs) > 0:
+        st.write(f'The following hub zones have sufficient reference prices. No Index Storage Credits are needed: {neg_hzs}.')
+    else:
+        st.write(f'All hub zones need incentives to support storage.')
 
 
     ## st.pyplot(hub_polygons_df)
