@@ -353,6 +353,7 @@ def RP_tables(duration, capacity, strike_price):
     Pan_rev_list = []
     South_rev_list = []
     West_rev_list = []
+    Strike_rev_list = []
 
     if duration < 8:
         for i in month_number:
@@ -367,6 +368,8 @@ def RP_tables(duration, capacity, strike_price):
             South_rev_list.append(South_revenue)
             West_revenue = (RP_df_test_year['West Reference Price'][i]) * energy * days_per_month[i]
             West_rev_list.append(West_revenue)
+            Strike_revenue = strike_price * energy * days_per_month[i]
+            Strike_rev_list.append(Strike_revenue)
     else:
         for i in month_number:
             weeks_per_month = 4.5
@@ -381,6 +384,8 @@ def RP_tables(duration, capacity, strike_price):
             South_rev_list.append(South_revenue)
             West_revenue = (RP_df_test_year['West Reference Price'][i]) * energy * weeks_per_month
             West_rev_list.append(West_revenue)
+            Strike_revenue = strike_price * energy * weeks_per_month
+            Strike_rev_list.append(Strike_revenue)
 
     revenues_df = pd.DataFrame({'Houston Monthly Reference Revenue ($)':Hou_rev_list,'North Monthly Reference Revenue ($)':North_rev_list,
                                 'Panhandle Monthly Reference Revenue ($)':Pan_rev_list,'South Monthly Reference Revenue ($)':South_rev_list,
@@ -388,14 +393,26 @@ def RP_tables(duration, capacity, strike_price):
     
     revenues_df.index = months
 
-    total_test_year_revenues = {'Houston Hub Zone ($)':revenues_df['Houston Monthly Reference Revenue ($)'].sum(),
-                                'North Hub Zone ($)':revenues_df['North Monthly Reference Revenue ($)'].sum(),
-                                'Panhandle Hub Zone ($)':revenues_df['Panhandle Monthly Reference Revenue ($)'].sum(),
-                                'South Hub Zone ($)':revenues_df['South Monthly Reference Revenue ($)'].sum(),
-                                'West Hub Zone ($)':revenues_df['West Monthly Reference Revenue ($)'].sum()}
+    total_test_year_revenues = {'Houston Hub Zone ($)':[revenues_df['Houston Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['Houston Monthly Reference Revenue ($)'].sum()],
+                                'North Hub Zone ($)':[revenues_df['North Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['North Monthly Reference Revenue ($)'].sum()],
+                                'Panhandle Hub Zone ($)':[revenues_df['Panhandle Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['Panhandle Monthly Reference Revenue ($)'].sum()],
+                                'South Hub Zone ($)':[revenues_df['South Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['South Monthly Reference Revenue ($)'].sum()],
+                                'West Hub Zone ($)':[revenues_df['West Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['West Monthly Reference Revenue ($)'].sum()]}
     
-    total_revenues_df = pd.DataFrame([total_test_year_revenues])
-    total_revenues_df.index = ['Annual Reference Revenues ($)']
+    total_revenues_df = pd.DataFrame(total_test_year_revenues)
+    total_revenues_df.index = ['Annual Reference Revenues ($)','Annual Strike Price Revenues ($)','Index Storage Credits']
+
+    for i in len(total_revenues_df.columns):
+        hz_names = ['Houston','North','Panhandle','South','West']
+        neg_hzs = []
+        if total_revenues_df.iloc[2][i]<0:
+            hub_zone_negative = hz_names[i]
+            neg_hzs.append(hub_zone_negative)
+    if len(neg_hzs) > 0:
+        neg_hzs_list = neg_hzs
+    
+    max_hub_zone = total_revenues_df.iloc[2].idxmax()
+
 
     fig, ax = plt.subplots(figsize=(12, 6))
     RP_df_test_year.plot(kind='bar', figsize=(12, 6),ax=ax,legend=False)
@@ -536,12 +553,12 @@ def RP_tables(duration, capacity, strike_price):
     hub_polygons_df = hub_polygons_df.drop(columns=['OBJECTID','NAME','STATE_NAME','STATE_FIPS','CNTY_FIPS','FIPS','SQMI','Shape_Leng','Shape_Area'])
     hub_polygons_df = gpd.GeoDataFrame(hub_polygons_df)
 
-    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df ## hub_polygons_df
+    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, neg_hzs_list ## hub_polygons_df
 
 
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df = RP_tables(duration, capacity, strike_price)
+    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, neg_hzs_list = RP_tables(duration, capacity, strike_price)
 
     st.pyplot(ref_prices)
 
@@ -552,6 +569,11 @@ if st.button('Run'):
     st.dataframe(revenues_df)
 
     st.dataframe(total_revenues_df)
+
+    st.write(f'The hub zone with the maximum reference price is: {max_hub_zone}')
+
+    st.write(f'The following hub zones have sufficient reference prices. No Index Storage Credits are needed: {neg_hzs_list}')
+
 
     ## st.pyplot(hub_polygons_df)
 
