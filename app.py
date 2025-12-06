@@ -15,7 +15,7 @@ st.set_page_config(page_title="Reference Price for Batteries in ERCOT",layout='w
 st.title("Reference Price for Batteries in ERCOT")
 
 duration = st.slider('Select a battery duration:',0,12,4,1)
-capacity = st.slider('Select a capacity: ',0,1000,0)
+capacity = st.slider('Select a capacity: ',0,1000,100,10)
 
 def RP_tables(duration, capacity):
 
