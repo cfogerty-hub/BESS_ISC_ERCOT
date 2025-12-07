@@ -557,7 +557,8 @@ def RP_tables(duration, capacity):
 
     hub_polygons.index = ['HOU','NORTH','PAN','SOUTH','WEST']
 
-    hubs_map = hub_polygons.plot(column=hub_polygons.index, legend=True)
+    hubs_map, ax = plt.subplots(figsize=(8, 8))
+    hub_polygons.plot(column='hub zone', legend=True, ax=ax)
 
     hub_polygons_df = pd.DataFrame(hub_polygons)
     df.index = hub_polygons_df.index
