@@ -557,7 +557,7 @@ def RP_tables(duration, capacity):
 
     hub_polygons.index = ['HOU','NORTH','PAN','SOUTH','WEST']
 
-    hub_polygons.plot(column=hub_polygons.index, legend=True)
+    hubs_map = hub_polygons.plot(column=hub_polygons.index, legend=True)
 
     hub_polygons_df = pd.DataFrame(hub_polygons)
     df.index = hub_polygons_df.index
@@ -565,12 +565,14 @@ def RP_tables(duration, capacity):
     hub_polygons_df = hub_polygons_df.drop(columns=['OBJECTID','NAME','STATE_NAME','STATE_FIPS','CNTY_FIPS','FIPS','SQMI','Shape_Leng','Shape_Area'])
     hub_polygons_df = gpd.GeoDataFrame(hub_polygons_df)
 
-    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price ## hub_polygons_df
+    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price, hubs_map ## hub_polygons_df
 
 
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price = RP_tables(duration, capacity)
+    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price, hubs_map = RP_tables(duration, capacity)
+
+    st.pyplot(hubs_map)
 
     st.pyplot(ref_prices)
 
@@ -592,10 +594,12 @@ if st.button('Run'):
 
     st.write(f'The hub zone with the maximum reference revenues is: {max_hub_zone}')
 
-    if len(neg_hzs) > 0:
-        st.write(f'The following hub zones have sufficient reference prices at this strike price. No Index Storage Credits are needed: {neg_hzs}.')
+    if len(neg_hzs) == 5:
+        st.write(f'ERCOT generates sufficient revenues across all hub zones. No incentives are needed.')
+    elif 0 < len(neg_hzs) < 5:
+        st.write(f'The following hub zones have sufficient reference prices at this strike price. No Index Storage Credits are needed: {neg_hzs}. The rest need incentives.')
     else:
-        st.write(f'All hub zones have Reference Revenues below Strike Price revenues. Hub zones with ISCs ranked from highest to lowest: {hub_zone_descending}')
+        st.write(f'All hub zones have Reference Revenues below Strike Price revenues. Incentives may be needed. Hub zones with estimated ISCs ranked from highest to lowest: {hub_zone_descending}')
 
 
     ## st.pyplot(hub_polygons_df)
