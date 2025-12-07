@@ -402,9 +402,10 @@ def RP_tables(duration, capacity, strike_price):
     total_revenues_df = pd.DataFrame(total_test_year_revenues)
     total_revenues_df.index = ['Annual Reference Revenues ($)','Annual Strike Price Revenues ($)','Index Storage Credits']
 
+    hz_names = ['Houston','North','Panhandle','South','West']
+    neg_hzs = []
+
     for i in range(len(total_revenues_df.columns)):
-        hz_names = ['Houston','North','Panhandle','South','West']
-        neg_hzs = []
         if total_revenues_df.iloc[2][i]<0:
             hub_zone_negative = hz_names[i]
             neg_hzs.append(hub_zone_negative)
