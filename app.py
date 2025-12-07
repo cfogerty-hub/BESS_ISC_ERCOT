@@ -667,7 +667,10 @@ def RP_tables(duration, capacity):
 
     hub_polygons.index = ['HOU','NORTH','PAN','SOUTH','WEST']
 
-    hub_polygons.plot(column=hub_polygons.index, legend=True)
+    fig, ax = plt.subplots(figsize=(8, 8))
+    hub_polygons.plot(column=hub_polygons.index, legend=True, ax=ax)
+    ax.set_title("ERCOT Hub Zones", fontsize=16)
+    hubs_map = fig
 
     hub_polygons_df = pd.DataFrame(hub_polygons)
     df.index = hub_polygons_df.index
@@ -675,12 +678,12 @@ def RP_tables(duration, capacity):
     hub_polygons_df = hub_polygons_df.drop(columns=['OBJECTID','NAME','STATE_NAME','STATE_FIPS','CNTY_FIPS','FIPS','SQMI','Shape_Leng','Shape_Area'])
     hub_polygons_df = gpd.GeoDataFrame(hub_polygons_df)
 
-    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price ## hub_polygons_df
-
-
+    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price, hubs_map ## hub_polygons_df
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price = RP_tables(duration, capacity)
+    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price, hubs_map = RP_tables(duration, capacity)
+
+    st.pyplot(hubs_map)
 
     st.pyplot(ref_prices)
 
