@@ -19,6 +19,116 @@ st.write("The strike prices are estimated as the cost of new entry to pay back t
 duration = st.slider('Select a battery duration (hours):',0,12,4,1)
 capacity = st.slider('Select a capacity (MW): ',0,1000,100,10)
 
+hou_hub_counties = ['Montgomery','Waller','Harris','Fort Bend','Brazoria','Galveston','Chambers']
+
+north_hub_counties = [
+    'Montague','Cooke','Grayson','Fannin','Lamar','Red River',
+    'Jack','Wise','Denton','Collin','Hunt','Hopkins','Delta','Franklin','Titus',
+    'Stephens','Palo Pinto','Parker','Tarrant','Dallas','Rockwall','Rains','Wood',
+    'Eastland','Erath','Hood','Somervell','Johnson','Ellis','Kaufman','Van Zandt','Smith',
+    'Brown','Comanche','Bosque','Hill','Navarro','Henderson','Smith','Rusk',
+    'San Saba', 'Mills','Hamilton','McLennan','Limestone','Freestone','Anderson','Cherokee',
+    'Nacogdoches','San Augustine','Angelina','Houston','Grimes','Madison','Brazos',
+    'Lampasas','Bell','Coryell','Falls','Robertson','Leon']
+
+pan_hub_counties = [
+    "Dallam", "Hartley", "Oldham", "Deaf Smith", "Parmer", "Bailey", "Cochran",
+    "Hockley", "Sherman", "Hansford", "Ochiltree", "Lipscomb", "Roberts",
+    "Hemphill", "Wheeler", "Gray", "Carson", "Hutchinson", "Moore", "Potter",
+    "Armstrong", "Randall", "Donley", "Collingsworth", "Briscoe", "Castro",
+    "Swisher", "Floyd", "Motley", "Childress", "Hall", "Hale", "Lamb",
+    "Lubbock", "Crosby", "Dickens"
+]
+
+south_hub_counties = [
+    "Maverick", "Zavala", "Frio", "Atascosa", "Karnes", "DeWitt", "Lavaca",
+    "Gonzales",'Milam', "Guadalupe",'Lee', "Comal", "Kendall", "Bandera", "Medina", "Bexar",
+    "Wilson",'Austin','Kerr','Wharton', "Goliad", 'Bastrop',"Victoria", "Calhoun", "Refugio", "Aransas",
+    "San Patricio", 'Gillespie','Jackson','Caldwell',"Bee",'Llano', 'Hays','Travis','Burnet',"Live Oak", "McMullen", "La Salle", "Dimmit", "Webb",
+    "Duval",'Fayette', "McCulloch", "Jim Wells",'Colorado','Blanco', "Nueces", "Kleberg", "Kenedy", "Brooks", "Starr",
+    "Hidalgo",'Williamson','Washington','Burleson',"Willacy", "Cameron", "Zapata", "Jim Hogg", "Matagorda", "Mason"
+]
+
+west_hub_counties = [
+    "El Paso",'Wichita', "Cottle",'Hardeman','Wilbarger','Young',"Hudspeth", "Culberson", "Reeves", "Loving", "Winkler", "Ward",
+    "Crane", "Upton", "Reagan","Knox",'King', "Irion", "Jeff Davis", "Pecos", "Terrell",
+    "Crockett","Archer", "Schleicher", "Sutton", "Kimble", "Menard", "Presidio",
+    "Brewster", "Val Verde", "Edwards", "Real", "Kinney", "Uvalde", "Andrews",
+    "Martin", "Howard", "Mitchell", "Nolan", "Taylor", "Callahan",
+    "Baylor",'Tom Green',"Coleman", "Runnels", "Concho",
+    "Midland", "Glasscock", "Sterling", "Coke", "Ector", "Gaines",
+    "Dawson", "Borden", "Scurry", "Fisher", "Jones", "Shackelford", "Yoakum",
+    "Terry",'Foard','Clay', "Lynn", "Garza", "Kent", "Stonewall", "Haskell", "Throckmorton",
+]
+
+## Locate non-ercot counties: https://www.ercot.com/news/mediakit/maps
+
+non_ercot_counties = ['Dallam','Sherman','Hansford','Ochiltree','Lipscomb','Moore','Hartley','Hutchinson','Hemphill','Bailey','Lamb','Cochran','Hockley',
+                      'Yoakum','Terry','Gaines','El Paso','Hudspeth','Bowie','Morris','Cass','Camp','Upshur','Marion','Harrison','Gregg','Panola','Shelby',
+                      'San Augustine','Sabine','Newston','Jasper','Tyler','Polk','Trinity','San Jacinto','Liberty','Hardin','Orange','Jefferson']
+
+## import TX counties shapefile
+
+my_universal_path = Path("US_COUNTY_SHPFILE/US_county_cont.shp")
+
+# read in a shapefile of US lower 48 counties, MUST SELECT the .shp!
+us_county = gpd.read_file(my_universal_path)
+
+us_county.head()
+
+# plotting maps: https://geopandas.org/en/stable/docs/user_guide/mapping.html
+us_county.plot()
+
+# plot just the boundaries
+us_county.boundary.plot(color="black")
+
+# get the limits of the gdf
+us_county.total_bounds
+
+# get the coordinate reference system (CRS)
+us_county.crs
+
+# can aggregate geometry on a column: https://geopandas.org/en/stable/docs/user_guide/aggregation_with_dissolve.html
+us_states = us_county.dissolve(
+    by="STATE_NAME", aggfunc="sum"
+)  # aggfunc: first (default), last, min, max, etc. BE CAREFULL!! Some columns don't make sense to sum, like names
+
+
+# you can make a df from a gdf
+us_df = pd.DataFrame(us_states)
+
+## downselect to TX counties
+list(us_county)
+
+tx_county = us_county[us_county["STATE_NAME"] == "Texas"]
+
+tx_county.plot()
+
+tx_county.boundary.plot()
+
+tx = tx_county.dissolve(by="STATE_NAME", aggfunc="sum")
+
+ercot_zones = tx_county[tx_county['NAME'].isin(hou_hub_counties + north_hub_counties + pan_hub_counties + south_hub_counties + west_hub_counties)]
+
+non_ercot_zones = tx_county[tx_county['NAME'].isin(non_ercot_counties)]
+
+ercot_zones['hub zone'] = np.nan
+ercot_zones.loc[ercot_zones['NAME'].isin(hou_hub_counties), 'hub zone'] = 'HOU'
+ercot_zones.loc[ercot_zones['NAME'].isin(north_hub_counties), 'hub zone'] = 'NORTH'
+ercot_zones.loc[ercot_zones['NAME'].isin(pan_hub_counties), 'hub zone'] = 'PAN'
+ercot_zones.loc[ercot_zones['NAME'].isin(south_hub_counties), 'hub zone'] = 'SOUTH'
+ercot_zones.loc[ercot_zones['NAME'].isin(west_hub_counties), 'hub zone'] = 'WEST'
+
+hub_polygons = ercot_zones.dissolve(by='hub zone',aggfunc='sum')
+
+hub_polygons = gpd.overlay(hub_polygons,non_ercot_zones,how='difference')
+
+hub_polygons.index = ['HOU','NORTH','PAN','SOUTH','WEST']
+
+fig, ax = plt.subplots(figsize=(8, 8))
+hub_polygons.plot(column=hub_polygons.index, legend=True, ax=ax)
+ax.set_title("ERCOT Hub Zones", fontsize=16)
+st.pyplot(fig)
 
 def RP_tables(duration, capacity):
 
@@ -557,8 +667,7 @@ def RP_tables(duration, capacity):
 
     hub_polygons.index = ['HOU','NORTH','PAN','SOUTH','WEST']
 
-    hubs_map, ax = plt.subplots(figsize=(8, 8))
-    hub_polygons.plot(column='hub zone', legend=True, ax=ax)
+    hub_polygons.plot(column=hub_polygons.index, legend=True)
 
     hub_polygons_df = pd.DataFrame(hub_polygons)
     df.index = hub_polygons_df.index
@@ -566,14 +675,12 @@ def RP_tables(duration, capacity):
     hub_polygons_df = hub_polygons_df.drop(columns=['OBJECTID','NAME','STATE_NAME','STATE_FIPS','CNTY_FIPS','FIPS','SQMI','Shape_Leng','Shape_Area'])
     hub_polygons_df = gpd.GeoDataFrame(hub_polygons_df)
 
-    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price, hubs_map ## hub_polygons_df
+    return ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price ## hub_polygons_df
 
 
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price, hubs_map = RP_tables(duration, capacity)
-
-    st.pyplot(hubs_map)
+    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price = RP_tables(duration, capacity)
 
     st.pyplot(ref_prices)
 
