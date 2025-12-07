@@ -560,7 +560,11 @@ if st.button('Run'):
 
     st.pyplot(ref_prices)
 
+    st.write(f'August 2023 is an outlier. Below, August 2023 reference price is adjusted to equal the average of the 2022 and 2024 August RPs.')
+
     st.pyplot(bar_ref_prices)
+
+    st.write(f'Below is the test year Reference Prices, calculated as the average of the 2022-2024 Reference Prices.')
 
     st.pyplot(test_year)
 
