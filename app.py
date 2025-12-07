@@ -30,7 +30,12 @@ def RP_tables(duration, capacity):
 
     annual_revenues_needed = total_cost/15
 
-    strike_price = (annual_revenues_needed)/(365*4)
+    annual_revenues_needed_per_mw = annual_revenues_needed/capacity
+
+    if duration < 8:
+        strike_price = (annual_revenues_needed_per_mw)/(365*duration)
+    else:
+        strike_price = (annual_revenues_needed_per_mw)/(52*duration)
 
     ## First, extract the hub prices to calculate the REAP.
 
