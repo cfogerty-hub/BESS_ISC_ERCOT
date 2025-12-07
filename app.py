@@ -350,11 +350,11 @@ def RP_tables(duration, capacity):
 
         ## Test year for reference prices
 
-    RP_df_test_year = pd.DataFrame({'Houston Reference Price':np.mean([RP_df_2022['Houston Reference Price'],RP_df_2023_aug_adjusted['Houston Reference Price'],RP_df_2024['Houston Reference Price']],axis=0),
-                                            'North Reference Price':np.mean([RP_df_2022['North Reference Price'],RP_df_2023_aug_adjusted['North Reference Price'],RP_df_2024['North Reference Price']],axis=0),
-                                            'Panhandle Reference Price':np.mean([RP_df_2022['Panhandle Reference Price'],RP_df_2023_aug_adjusted['Panhandle Reference Price'],RP_df_2024['Panhandle Reference Price']],axis=0),
-                                            'South Reference Price':np.mean([RP_df_2022['South Reference Price'],RP_df_2023_aug_adjusted['South Reference Price'],RP_df_2024['South Reference Price']],axis=0),
-                                            'West Reference Price':np.mean([RP_df_2022['West Reference Price'],RP_df_2023_aug_adjusted['West Reference Price'],RP_df_2024['West Reference Price']],axis=0)})
+    RP_df_test_year = pd.DataFrame({'Houston Reference Price':round(np.mean([RP_df_2022['Houston Reference Price'],RP_df_2023_aug_adjusted['Houston Reference Price'],RP_df_2024['Houston Reference Price']],axis=0),2),
+                                            'North Reference Price':round(np.mean([RP_df_2022['North Reference Price'],RP_df_2023_aug_adjusted['North Reference Price'],RP_df_2024['North Reference Price']],axis=0),2),
+                                            'Panhandle Reference Price':round(np.mean([RP_df_2022['Panhandle Reference Price'],RP_df_2023_aug_adjusted['Panhandle Reference Price'],RP_df_2024['Panhandle Reference Price']],axis=0),2),
+                                            'South Reference Price':round(np.mean([RP_df_2022['South Reference Price'],RP_df_2023_aug_adjusted['South Reference Price'],RP_df_2024['South Reference Price']],axis=0),2),
+                                            'West Reference Price':round(np.mean([RP_df_2022['West Reference Price'],RP_df_2023_aug_adjusted['West Reference Price'],RP_df_2024['West Reference Price']],axis=0),2)})
     RP_df_test_year.index = months
 
     days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -405,11 +405,11 @@ def RP_tables(duration, capacity):
     
     revenues_df.index = months
 
-    total_test_year_revenues = {'Houston Hub Zone':[revenues_df['Houston Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['Houston Monthly Reference Revenue ($)'].sum()],
-                                'North Hub Zone':[revenues_df['North Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['North Monthly Reference Revenue ($)'].sum()],
-                                'Panhandle Hub Zone':[revenues_df['Panhandle Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['Panhandle Monthly Reference Revenue ($)'].sum()],
-                                'South Hub Zone':[revenues_df['South Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['South Monthly Reference Revenue ($)'].sum()],
-                                'West Hub Zone':[revenues_df['West Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['West Monthly Reference Revenue ($)'].sum()]}
+    total_test_year_revenues = {'Houston Hub Zone':[revenues_df['Houston Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['Houston Monthly Reference Revenue ($)'].sum()],
+                                'North Hub Zone':[revenues_df['North Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['North Monthly Reference Revenue ($)'].sum()],
+                                'Panhandle Hub Zone':[revenues_df['Panhandle Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['Panhandle Monthly Reference Revenue ($)'].sum()],
+                                'South Hub Zone':[revenues_df['South Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['South Monthly Reference Revenue ($)'].sum()],
+                                'West Hub Zone':[revenues_df['West Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['West Monthly Reference Revenue ($)'].sum()]}
     
     total_revenues_df = pd.DataFrame(total_test_year_revenues)
     total_revenues_df.index = ['Annual Reference Revenues ($)','Annual Strike Price Revenues ($)','Index Storage Credits']
@@ -588,14 +588,14 @@ if st.button('Run'):
 
     st.write(f'Below are the revenues for a {capacity} MW battery with a {duration}-hr duration.')
     
-    st.write(f'For a {capacity} MW with a {duration}-hr duration, the estimated strike price (CONE) is ${strike_price}/MWh.')
+    st.write(f'For a {capacity} MW with a {duration}-hr duration, the estimated strike price (CONE) is ${round(strike_price,2)}/MWh.')
 
     st.dataframe(total_revenues_df)
 
     st.write(f'The hub zone with the maximum reference revenues is: {max_hub_zone}')
 
     if len(neg_hzs) == 5:
-        st.write(f'ERCOT generates sufficient revenues across all hub zones. No incentives are needed.')
+        st.write(f'ERCOT generates sufficient revenues across all hub zones. No incentives are needed for {capacity} MW batteries with {duration}-hr duration.')
     elif 0 < len(neg_hzs) < 5:
         st.write(f'The following hub zones have sufficient reference prices at this strike price. No Index Storage Credits are needed: {neg_hzs}. The rest need incentives.')
     else:
