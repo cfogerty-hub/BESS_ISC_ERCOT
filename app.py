@@ -411,6 +411,7 @@ def RP_tables(duration, capacity, strike_price):
     
     max_hub_zone = total_revenues_df.iloc[0].idxmax()
 
+    hub_zone_descending = total_revenues_df.iloc[2].sort_values(ascending=False).index.to_list()
 
     fig, ax = plt.subplots(figsize=(12, 6))
     RP_df_test_year.plot(kind='bar', figsize=(12, 6),ax=ax,legend=False)
@@ -556,7 +557,7 @@ def RP_tables(duration, capacity, strike_price):
 
 
 if st.button('Run'):
-    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, neg_hzs = RP_tables(duration, capacity, strike_price)
+    ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs = RP_tables(duration, capacity, strike_price)
 
     st.pyplot(ref_prices)
 
@@ -579,7 +580,7 @@ if st.button('Run'):
     if len(neg_hzs) > 0:
         st.write(f'The following hub zones have sufficient reference prices at this strike price. No Index Storage Credits are needed: {neg_hzs}.')
     else:
-        st.write(f'All hub zones need incentives to support storage.')
+        st.write(f'All hub zones have Reference Revenues below Strike Price revenues. Hub zones with ISCs ranked from highest to lowest: {hub_zone_descending}')
 
 
     ## st.pyplot(hub_polygons_df)
