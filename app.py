@@ -574,13 +574,18 @@ def RP_tables(duration, capacity):
 if st.button('Run'):
     ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price, hubs_map = RP_tables(duration, capacity)
 
-    st.pyplot(hubs_map, use_container_width=True)
+    col1, col2, col3 = st.columns(3)
 
-    st.pyplot(ref_prices, use_container_width=True)
-
-    st.write(f'August 2023 is an outlier. Below, August 2023 reference price is adjusted to equal the average of the 2022 and 2024 August RPs.')
-
-    st.pyplot(bar_ref_prices, use_container_width=True)
+    st.write(f'August 2023 is an outlier. Thus, August 2023 reference price is adjusted to equal the average of the 2022 and 2024 August RPs.')
+    
+    with col1:
+        st.pyplot(hubs_map, use_container_width=True)
+    
+    with col2:
+        st.pyplot(ref_prices, use_container_width=True)
+    
+    with col3:
+        st.pyplot(bar_ref_prices, use_container_width=True)
 
     st.write(f'Below is the test year Reference Prices, calculated as the average of the 2022-2024 Reference Prices.')
 
