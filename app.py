@@ -407,11 +407,11 @@ def RP_tables(duration, capacity):
     
     revenues_df.index = months
 
-    total_test_year_revenues = {'Houston Hub Zone':[revenues_df['Houston Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['Houston Monthly Reference Revenue ($)'].sum()],
-                                'North Hub Zone':[revenues_df['North Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['North Monthly Reference Revenue ($)'].sum()],
-                                'Panhandle Hub Zone':[revenues_df['Panhandle Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['Panhandle Monthly Reference Revenue ($)'].sum()],
-                                'South Hub Zone':[revenues_df['South Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['South Monthly Reference Revenue ($)'].sum()],
-                                'West Hub Zone':[revenues_df['West Monthly Reference Revenue ($)'].sum(),round(sum(Strike_rev_list),2),sum(Strike_rev_list)-revenues_df['West Monthly Reference Revenue ($)'].sum()]}
+    total_test_year_revenues = {'Houston Hub Zone':[revenues_df['Houston Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),2,sum(Strike_rev_list)-revenues_df['Houston Monthly Reference Revenue ($)'].sum()],
+                                'North Hub Zone':[revenues_df['North Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),2,sum(Strike_rev_list)-revenues_df['North Monthly Reference Revenue ($)'].sum()],
+                                'Panhandle Hub Zone':[revenues_df['Panhandle Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),2,sum(Strike_rev_list)-revenues_df['Panhandle Monthly Reference Revenue ($)'].sum()],
+                                'South Hub Zone':[revenues_df['South Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['South Monthly Reference Revenue ($)'].sum()],
+                                'West Hub Zone':[revenues_df['West Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['West Monthly Reference Revenue ($)'].sum()]}
     
     total_revenues_df = pd.DataFrame(total_test_year_revenues)
     total_revenues_df.index = ['Annual Reference Revenues ($)','Annual Strike Price Revenues ($)','Index Storage Credits']
