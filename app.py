@@ -590,7 +590,7 @@ if st.button('Run'):
 
     st.write(f'Below are the revenues for a {capacity} MW battery with a {duration}-hr duration.')
     
-    st.write(f'For a {capacity} MW with a {duration}-hr duration, the estimated strike price (CONE) is ${strike_price}/MWh.')
+    st.write(f'For a {capacity} MW with a {duration}-hr duration, the estimated strike price (CONE) is ${round(strike_price,2)}/MWh.')
 
     st.dataframe(total_revenues_df.style.format('${:,.2f}'))
 
