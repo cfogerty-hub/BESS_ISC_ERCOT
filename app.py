@@ -33,10 +33,10 @@ def RP_tables(duration, capacity):
 
     if duration < 8:
         strike_price = (annual_revenues_needed_per_mw)/(365*duration)
-        strike_price = round(strike_price,2)
+        strike_price = strike_price
     else:
         strike_price = (annual_revenues_needed_per_mw)/(52*duration)
-        strike_price = round(strike_price,2)
+        strike_price = strike_price
 
     ## First, extract the hub prices to calculate the REAP.
 
@@ -352,11 +352,11 @@ def RP_tables(duration, capacity):
 
         ## Test year for reference prices
 
-    RP_df_test_year = pd.DataFrame({'Houston Reference Price':np.mean([RP_df_2022['Houston Reference Price'],RP_df_2023_aug_adjusted['Houston Reference Price'],RP_df_2024['Houston Reference Price']],axis=0).round(2),
-                                            'North Reference Price':np.mean([RP_df_2022['North Reference Price'],RP_df_2023_aug_adjusted['North Reference Price'],RP_df_2024['North Reference Price']],axis=0).round(2),
-                                            'Panhandle Reference Price':np.mean([RP_df_2022['Panhandle Reference Price'],RP_df_2023_aug_adjusted['Panhandle Reference Price'],RP_df_2024['Panhandle Reference Price']],axis=0).round(2),
-                                            'South Reference Price':np.mean([RP_df_2022['South Reference Price'],RP_df_2023_aug_adjusted['South Reference Price'],RP_df_2024['South Reference Price']],axis=0).round(2),
-                                            'West Reference Price':np.mean([RP_df_2022['West Reference Price'],RP_df_2023_aug_adjusted['West Reference Price'],RP_df_2024['West Reference Price']],axis=0).round(2)})
+    RP_df_test_year = pd.DataFrame({'Houston Reference Price':np.mean([RP_df_2022['Houston Reference Price'],RP_df_2023_aug_adjusted['Houston Reference Price'],RP_df_2024['Houston Reference Price']],axis=0),
+                                            'North Reference Price':np.mean([RP_df_2022['North Reference Price'],RP_df_2023_aug_adjusted['North Reference Price'],RP_df_2024['North Reference Price']],axis=0),
+                                            'Panhandle Reference Price':np.mean([RP_df_2022['Panhandle Reference Price'],RP_df_2023_aug_adjusted['Panhandle Reference Price'],RP_df_2024['Panhandle Reference Price']],axis=0),
+                                            'South Reference Price':np.mean([RP_df_2022['South Reference Price'],RP_df_2023_aug_adjusted['South Reference Price'],RP_df_2024['South Reference Price']],axis=0),
+                                            'West Reference Price':np.mean([RP_df_2022['West Reference Price'],RP_df_2023_aug_adjusted['West Reference Price'],RP_df_2024['West Reference Price']],axis=0)})
     RP_df_test_year.index = months
 
     days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
