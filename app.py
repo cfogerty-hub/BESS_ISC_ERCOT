@@ -269,7 +269,7 @@ def RP_tables(duration, capacity):
 
         ## subplots 
 
-    fig, ax = plt.subplots(3,1,figsize=(15,10))
+    fig, ax = plt.subplots(3,1,figsize=(8,8))
     ax[0].plot(RP_df_2022)
     ax[0].set_title(f'2022 Reference Prices by Hub Zone for {duration}-hr batteries')
     ax[0].set_ylabel('$/MWh')
@@ -325,16 +325,16 @@ def RP_tables(duration, capacity):
     RP_df_2023_aug_adjusted['South Reference Price'][RP_df_2023_aug_adjusted.index == 'Aug'] = avg_south_aug
     RP_df_2023_aug_adjusted['West Reference Price'][RP_df_2023_aug_adjusted.index == 'Aug'] = avg_west_aug
 
-    fig, ax = plt.subplots(3,1,figsize=(15,10))
-    RP_df_2022.plot(kind='bar', figsize=(12, 6),ax=ax[0],legend=False)
+    fig, ax = plt.subplots(3,1,figsize=(8,8))
+    RP_df_2022.plot(kind='bar',ax=ax[0],legend=False)
     ax[0].set_ylabel('Reference Price ($/MWh)')
     ax[0].set_title(f'2022 Prices by Hub Zone Across Months {duration}-hr Batteries')
     ax[0].set_ylim(0,1000)
-    RP_df_2023_aug_adjusted.plot(kind='bar', figsize=(12, 6),ax=ax[1],legend=False)
+    RP_df_2023_aug_adjusted.plot(kind='bar',ax=ax[1],legend=False)
     ax[1].set_ylabel('Reference Price ($/MWh)')
     ax[1].set_title(f'2023 Prices by Hub Zone Across Months with August Adjusted {duration}-hr Batteries')
     ax[1].set_ylim(0,1000)
-    RP_df_2024.plot(kind='bar', figsize=(12, 6),ax=ax[2],legend=False)
+    RP_df_2024.plot(kind='bar',ax=ax[2],legend=False)
     ax[2].set_xlabel('Month')
     ax[2].set_ylabel('Reference Price ($/MWh)')
     ax[2].set_title(f'2024 Prices by Hub Zone Across Months {duration}-hr Batteries')
