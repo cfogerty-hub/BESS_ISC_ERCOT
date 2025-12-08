@@ -586,13 +586,13 @@ if st.button('Run'):
 
     st.pyplot(test_year)
 
-    st.dataframe(revenues_df)
+    st.dataframe(revenues_df.style.format('${:,.2f}'))
 
     st.write(f'Below are the revenues for a {capacity} MW battery with a {duration}-hr duration.')
     
     st.write(f'For a {capacity} MW with a {duration}-hr duration, the estimated strike price (CONE) is ${strike_price}/MWh.')
 
-    st.dataframe(total_revenues_df)
+    st.dataframe(total_revenues_df.style.format('${:,.2f}'))
 
     st.write(f'The hub zone with the maximum reference revenues is: {max_hub_zone}')
 
