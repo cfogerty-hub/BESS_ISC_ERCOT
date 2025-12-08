@@ -11,12 +11,12 @@ import sys
 from io import StringIO
 from streamlit_folium import st_folium
 
-st.set_page_config(page_title="Reference Price for Batteries in ERCOT",layout='wide')
-st.title("Reference Price for Batteries in ERCOT")
-st.write("This tool calculates uses historical settlement prices from ERCOT Hub Zones to calculate the revenues that a battery of a specified capacity and duration would be expected to make from arbitrage and ancillary services. These Reference Prices would then serve as a hypothetical price used to calculate an Index Storage Credit (ISCs). ISCs, inspired by the NYSERDA Bulk Energy Storage Program, are intended to cover the gap between Reference Prices and Strike Prices bid in by battery owners to incentivize development. See https://www.nyserda.ny.gov/All-Programs/Energy-Storage-Program/Developers-and-Contractors/Bulk-Storage-Incentives for more details on this program.")
-st.write("Methodology: Using hub zone DAM settlement prices (https://www.ercot.com/mp/data-products/data-product-details?id=NP4-180-ER) for energy and capacity from 2022 to 2024, this tool calculates daily arbitrage revenues expected for batteries less than 8-hours in duration (spread between the highest and lowest 0 - 8 hours in a day based on duration). For batteries with duration between 8 and 12 hours, the tool calculates the weekly arbitrage revenues expected (spread between the highest and lowest 8 - 12 hours during the week based on duration). Ancillary service revenues are assumed to be the average DAM capacity prices (https://www.ercot.com/mp/data-products/data-product-details?id=NP4-181-ER) for an entire month across all revenue streams (NON-SPIN, REG-DOWN, REG-UP, RRS, ECRS). These assumptions are not sophisticated by design to set a baseline expected operational strategy for batteries.")
+st.set_page_config(page_title="Reference Prices for Batteries in ERCOT",layout='wide')
+st.title("Reference Prices for Batteries in ERCOT")
+st.write("This tool calculates uses historical settlement prices from ERCOT Hub Zones to calculate the revenues that a battery of a specified capacity and duration would be expected to make from arbitrage and ancillary services. The intention is to calculate what hypothetical incentives may be needed for batteries of different durations. These Reference Prices would then serve as a hypothetical price used to calculate an Index Storage Credit (ISCs). ISCs, inspired by the NYSERDA Bulk Energy Storage Program, are intended to cover the gap between Reference Prices and Strike Prices bid in by battery owners to incentivize development. See https://www.nyserda.ny.gov/All-Programs/Energy-Storage-Program/Developers-and-Contractors/Bulk-Storage-Incentives for more details on this program.")
+st.write("Methodology: Using hub zone DAM settlement prices (https://www.ercot.com/mp/data-products/data-product-details?id=NP4-180-ER) for energy and capacity from 2022 to 2024, this tool calculates daily arbitrage revenues expected for batteries less than or equal to 8-hours in duration (spread between the highest and lowest 0 - 8 hours in a day based on duration). For batteries with duration greater than 8-hours (medium to long-term energy storage), the tool calculates the weekly arbitrage revenues expected (spread between the highest and lowest priced hours during the week based on duration). Ancillary service revenues are assumed to be the average DAM capacity prices (https://www.ercot.com/mp/data-products/data-product-details?id=NP4-181-ER) for an entire month across all revenue streams (NON-SPIN, REG-DOWN, REG-UP, RRS, ECRS). These assumptions are not sophisticated by design to set a baseline expected operational strategy for batteries to estimate incentives.")
 st.write("The strike prices are estimated as the cost of new entry (CONE) to pay back the capital cost of a battery over 15 years based on the NREL 2024 estimated battery system cost in 2024 as a function of duration: y = 240.8x + 379.16 (https://docs.nrel.gov/docs/fy25osti/93281.pdf), where x is the duration and y is the capital cost in $/kW.")
-duration = st.slider('Select a battery duration (hours):',0,12,4,1)
+duration = st.slider('Select a battery duration (hours):',0,20,4,1)
 capacity = st.slider('Select a capacity (MW): ',0,1000,100,10)
 
 def RP_tables(duration, capacity):
@@ -31,7 +31,7 @@ def RP_tables(duration, capacity):
 
     annual_revenues_needed_per_mw = annual_revenues_needed/capacity
 
-    if duration < 8:
+    if duration <= 8:
         strike_price = (annual_revenues_needed_per_mw)/(365*duration)
         strike_price = strike_price
     else:
@@ -142,7 +142,7 @@ def RP_tables(duration, capacity):
         for month in range(1,13):
             df_month = df['Settlement Point Price'][df.index.month == month]
             reap_list = []
-            if duration < 8:
+            if duration <= 8:
                 for day in df_month.index.day.unique():
                     df_day = pd.DataFrame(df_month[df_month.index.day == day])
                     df_day = df_day.sort_values(by='Settlement Point Price',ascending=False)
@@ -369,7 +369,7 @@ def RP_tables(duration, capacity):
     West_rev_list = []
     Strike_rev_list = []
 
-    if duration < 8:
+    if duration <= 8:
         for i in month_number:
             i = i - 1
             Hou_revenue = (RP_df_test_year['Houston Reference Price'][i]) * energy * days_per_month[i]
