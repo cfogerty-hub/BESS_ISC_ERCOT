@@ -15,7 +15,7 @@ st.set_page_config(page_title="Reference Price for Batteries in ERCOT",layout='w
 st.title("Reference Price for Batteries in ERCOT")
 st.write("This tool calculates uses historical settlement prices from ERCOT Hub Zones to calculate the revenues that a battery of a specified capacity and duration would be expected to make from arbitrage and ancillary services. These Reference Prices would then serve as a hypothetical price used to calculate an Index Storage Credit (ISCs). ISCs, inspired by the NYSERDA Bulk Energy Storage Program, are intended to cover the gap between Reference Prices and Strike Prices bid in by battery owners to incentivize development. See https://www.nyserda.ny.gov/All-Programs/Energy-Storage-Program/Developers-and-Contractors/Bulk-Storage-Incentives for more details on this program.")
 st.write("Methodology: Using hub zone DAM settlement prices (https://www.ercot.com/mp/data-products/data-product-details?id=NP4-180-ER) for energy and capacity from 2022 to 2024, this tool calculates daily arbitrage revenues expected for batteries less than 8-hours in duration (spread between the highest and lowest 0 - 8 hours in a day based on duration). For batteries with duration between 8 and 12 hours, the tool calculates the weekly arbitrage revenues expected (spread between the highest and lowest 8 - 12 hours during the week based on duration). Ancillary service revenues are assumed to be the average DAM capacity prices (https://www.ercot.com/mp/data-products/data-product-details?id=NP4-181-ER) for an entire month across all revenue streams (NON-SPIN, REG-DOWN, REG-UP, RRS, ECRS). These assumptions are not sophisticated by design to set a baseline expected operational strategy for batteries.")
-st.write("The strike prices are estimated as the cost of new entry to pay back the capital cost of a battery over 15 years based on the NREL 2024 estimated battery system cost in 2024 as a function of duration: y = 240.8x + 379.16 (https://docs.nrel.gov/docs/fy25osti/93281.pdf), where x is the duration and y is the capital cost in $/kW.")
+st.write("The strike prices are estimated as the cost of new entry (CONE) to pay back the capital cost of a battery over 15 years based on the NREL 2024 estimated battery system cost in 2024 as a function of duration: y = 240.8x + 379.16 (https://docs.nrel.gov/docs/fy25osti/93281.pdf), where x is the duration and y is the capital cost in $/kW.")
 duration = st.slider('Select a battery duration (hours):',0,12,4,1)
 capacity = st.slider('Select a capacity (MW): ',0,1000,100,10)
 
@@ -414,7 +414,7 @@ def RP_tables(duration, capacity):
                                 'West Hub Zone':[revenues_df['West Monthly Reference Revenue ($)'].sum(),sum(Strike_rev_list),sum(Strike_rev_list)-revenues_df['West Monthly Reference Revenue ($)'].sum()]}
     
     total_revenues_df = pd.DataFrame(total_test_year_revenues)
-    total_revenues_df.index = ['Annual Reference Revenues ($)','Annual Strike Price Revenues ($)','Index Storage Credits']
+    total_revenues_df.index = ['Annual Reference Revenues ($)','Annual Strike Price Revenues ($)','Index Storage Credits (Incentives Needed)']
 
     hz_names = ['Houston','North','Panhandle','South','West']
     neg_hzs = []
@@ -574,17 +574,17 @@ def RP_tables(duration, capacity):
 if st.button('Run'):
     ref_prices, bar_ref_prices, test_year, revenues_df, total_revenues_df, max_hub_zone, hub_zone_descending, neg_hzs, strike_price, hubs_map = RP_tables(duration, capacity)
 
-    st.pyplot(hubs_map)
+    st.pyplot(hubs_map, use_container_width=True)
 
-    st.pyplot(ref_prices)
+    st.pyplot(ref_prices, use_container_width=True)
 
     st.write(f'August 2023 is an outlier. Below, August 2023 reference price is adjusted to equal the average of the 2022 and 2024 August RPs.')
 
-    st.pyplot(bar_ref_prices)
+    st.pyplot(bar_ref_prices, use_container_width=True)
 
     st.write(f'Below is the test year Reference Prices, calculated as the average of the 2022-2024 Reference Prices.')
 
-    st.pyplot(test_year)
+    st.pyplot(test_year, use_container_width=True)
 
     st.dataframe(revenues_df.style.format('${:,.2f}'))
 
